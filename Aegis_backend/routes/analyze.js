@@ -1,23 +1,17 @@
 const express = require('express');
 const router = express.Router();
-const axios = require('axios');
+const Analysis = require('../models/Analysis');
 
 router.post('/', async (req, res) => {
-  const { policyText } = req.body;
+  const { url, result } = req.body;
 
   try {
-    const response = await axios.post(
-      'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent',
-      {
-        contents: [{ parts: [{ text: `Analyze this privacy policy and identify data risks: ${policyText}` }] }],
-      },
-      { params: { key: process.env.GEMINI_API_KEY } }
-    );
-
-    const result = response.data.candidates[0].content.parts[0].text;
-    res.json({ result });
-  } catch (err) {
-    res.status(500).json({ error: 'Analysis failed' });
+    const analysis = new Analysis({ url, result });
+    await analysis.save(); // 🔥 this creates the DB & collection
+    res.json({ success: true, analysis });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, error: 'Failed to save analysis' });
   }
 });
 
