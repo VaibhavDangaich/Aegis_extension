@@ -1,26 +1,26 @@
 {
-    "manifest_version":3,
-    "name":"AegisAI",
-    "version":"1.0",
-   "description": "AegisAI scans privacy policies with AI to detect hidden risks, confusing language, and data misuse—so you don’t have to read the fine print.",
-   "action":{
-    "default_popup": "popup.html",
-    "default_icon": {
-      "16": "src/assets/privacy-policy_4926120.png",
-      "48": "src/assets/privacy-policy_4926120.png",
-      "128": "src/assets/privacy-policy_4926120.png"
-    }
-   },
-   "background": {
-    "service_worker": "background.js"
-  },
-  "content_scripts": [
-    {
-      "matches": ["<all_urls>"],
-      "js": ["content.js"]
-    }
-  ],
-   "permissions":["activeTab","scripting"],
-   "host_permissions":["<all_urls>"]
-
-}
+    "manifest_version": 3,
+    "name": "AegisAI",
+    "version": "1.0",
+    "description": "AegisAI scans privacy policies with AI to detect hidden risks, confusing language, and data misuse—so you don’t have to read the fine print.",
+    "action": {
+      "default_popup": "popup.html",
+      "default_icon": {
+        "16": "assets/privacy-policy_4926120.png",
+        "48": "assets/privacy-policy_4926120.png",
+        "128": "assets/privacy-policy_4926120.png"
+      }
+    },
+    "background": {
+      "service_worker": "background.js"
+    },
+    "content_scripts": [
+      {
+        "matches": ["<all_urls>"],
+        "js": ["content.js"]
+      }
+    ],
+    "permissions": ["activeTab", "scripting", "tabs"],
+    "host_permissions": ["<all_urls>"]
+  }
+  
