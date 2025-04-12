@@ -11,6 +11,7 @@ dbConnect();
 app.use(cors());
 app.use(express.json());
 
+
 // Routes
 app.use('/analyze', require('./routes/analyze'));
 

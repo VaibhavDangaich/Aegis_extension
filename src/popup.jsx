@@ -1,69 +1,61 @@
 import React, { useState } from 'react';
+import ReactDOM from 'react-dom';
+import './popup.css';
 
-const Popup = () => {
-  const [analysis, setAnalysis] = useState('');
+function Popup() {
+  const [result, setResult] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const analyzeCurrentTab = async () => {
+  const handleAnalyzeClick = async () => {
     setLoading(true);
     setError('');
-    setAnalysis('');
+    setResult('');
 
     try {
       const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-      const currentTabUrl = tab.url;
+      const url = tab.url;
 
-      const response = await fetch("http://localhost:5000/analyze", {
-        method: "POST",
+      const response = await fetch('http://localhost:5000/analyze', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ url: currentTabUrl }),
+        body: JSON.stringify({ url }),
       });
-
-      if (!response.ok) {
-        throw new Error(`Server error: ${response.status}`);
-      }
 
       const data = await response.json();
 
-      if (data && data.result) {
-        setAnalysis(data.result);
+      if (data.success) {
+        setResult(data.analysis.result);
       } else {
-        throw new Error("No 'result' field in server response");
+        setError(data.error || 'Analysis failed');
       }
     } catch (err) {
-      console.error("Error during analysis:", err);
-      setError(err.message || 'Something went wrong');
+      console.error('Popup Error:', err);
+      setError('An error occurred. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="p-4 w-72 font-sans">
-      <h1 className="text-lg font-semibold mb-2">AegisAI - Privacy Policy Analyzer</h1>
-      <button
-        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
-        onClick={analyzeCurrentTab}
-        disabled={loading}
-      >
-        {loading ? 'Analyzing...' : 'Analyze this Page'}
+    <div className="popup">
+      <h2>AegisAI 🛡️</h2>
+      <button onClick={handleAnalyzeClick} disabled={loading}>
+        {loading ? 'Analyzing...' : 'Analyze Privacy Policy'}
       </button>
 
-      {error && (
-        <p className="text-red-600 mt-2 text-sm">❌ {error}</p>
-      )}
-
-      {analysis && (
-        <div className="mt-4 text-sm text-gray-800">
-          <h2 className="font-medium mb-1">Analysis Result:</h2>
-          <p>{analysis}</p>
+      {result && (
+        <div className="result">
+          <h3>Analysis Result:</h3>
+          <p>{result}</p>
         </div>
       )}
+
+      {error && <p className="error">❌ {error}</p>}
     </div>
   );
-};
+}
 
-export default Popup;
+ReactDOM.render(<Popup />, document.getElementById('root'));
